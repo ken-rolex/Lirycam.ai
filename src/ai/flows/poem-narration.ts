@@ -55,7 +55,7 @@ async input => {
   // Free implementation using responsivevoice.js
   if (typeof window !== 'undefined' && window.responsiveVoice) {
     // Initialize ResponsiveVoice with a placeholder API key to prevent warnings.
-    window.responsiveVoice.apiKey = 'YOUR_API_KEY'; // Replace with a real API key if you have one
+    window.responsiveVoice.apiKey = '4ca42097513a097553df60be646654b6'; // Replace with a real API key if you have one
 
     const voice = mapVoiceGender(input.voiceGender, input.language);
     console.log(`Attempting to speak with voice: ${voice}`);
