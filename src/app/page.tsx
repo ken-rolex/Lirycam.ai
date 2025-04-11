@@ -316,6 +316,7 @@ export default function Home() {
                       size="default"
                       onClick={narrateThePoem}
                       disabled={!poem || loadingAudio}
+                      className="rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/80"
                     >
                       {loadingAudio ? (
                         <>
