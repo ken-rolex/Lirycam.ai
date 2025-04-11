@@ -6,7 +6,6 @@ import {photoToSong} from '@/ai/flows/photo-to-song';
 import {narratePoem} from '@/ai/flows/poem-narration';
 import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
 import {Textarea} from '@/components/ui/textarea';
 import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";
 import {cn} from "@/lib/utils";
@@ -30,6 +29,12 @@ const languages = [
   {value: 'pa-IN', label: 'Punjabi (India)'},
 ];
 
+const voiceGenders = [
+  {value: 'male', label: 'Male'},
+  {value: 'female', label: 'Female'},
+  {value: 'neutral', label: 'Neutral'},
+];
+
 export default function Home() {
   const [photoUrls, setPhotoUrls] = useState<string[]>([]);
   const [poem, setPoem] = useState('');
@@ -44,6 +49,8 @@ export default function Home() {
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const {theme, setTheme} = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [translating, setTranslating] = useState(false);
+
 
   useEffect(() => {
     setMounted(true);
@@ -141,6 +148,32 @@ export default function Home() {
       setAudioUrl('');
     } finally {
       setLoadingAudio(false);
+    }
+  };
+
+  const translatePoem = async () => {
+    setTranslating(true);
+    setErrorMessage('');
+    try {
+      // Placeholder for AI translation logic
+      // Replace this with your actual AI translation implementation
+      console.log(`Translating poem to ${language}`);
+      // For demonstration, just use a simple message
+      setPoem(`(Translated to ${language}) ${poem}`);
+      toast({
+        title: 'Translation Complete',
+        description: `Poem translated to ${language}.`,
+      });
+    } catch (error: any) {
+      console.error('Error translating poem:', error);
+      setErrorMessage('Failed to translate poem. Please try again.');
+      toast({
+        variant: 'destructive',
+        title: 'Translation Error',
+        description: 'Failed to translate poem. Please try again.',
+      });
+    } finally {
+      setTranslating(false);
     }
   };
 
@@ -284,32 +317,46 @@ export default function Home() {
                 <div className="rounded-xl border border-border bg-primary text-primary-foreground p-4 w-fit max-w-[80%] font-serif">
                   <p className="text-lg whitespace-pre-line">{poem}</p>
                   <div className="mt-4 flex items-center space-x-2">
-                    <Select
-                      value={voiceGender}
-                      onValueChange={(value) => setVoiceGender(value as 'male' | 'female' | 'neutral')}
-                    >
-                      <SelectTrigger className="w-[180px] h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1">
-                        <SelectValue placeholder="Select Voice Gender"/>
-                      </SelectTrigger>
-                      <SelectContent className="rounded-md shadow-md border border-border bg-popover text-popover-foreground">
-                        <SelectItem value="male">Male</SelectItem>
-                        <SelectItem value="female">Female</SelectItem>
-                        <SelectItem value="neutral">Neutral</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    {voiceGenders.map(gender => (
+                      <Button
+                        key={gender.value}
+                        variant={voiceGender === gender.value ? 'default' : 'secondary'}
+                        size="sm"
+                        onClick={() => setVoiceGender(gender.value as 'male' | 'female' | 'neutral')}
+                        className={cn(
+                          'rounded-md',
+                          voiceGender === gender.value ? 'bg-accent text-accent-foreground' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                        )}
+                      >
+                        {gender.label}
+                      </Button>
+                    ))}
 
-                    <Select value={language} onValueChange={(value) => setLanguage(value)}>
-                      <SelectTrigger className="w-[180px] h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1">
-                        <SelectValue placeholder="Select Language"/>
-                      </SelectTrigger>
-                      <SelectContent className="rounded-md shadow-md border border-border bg-popover text-popover-foreground">
-                        {languages.map(lang => (
-                          <SelectItem key={lang.value} value={lang.value}>
-                            {lang.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    {languages.map(lang => (
+                      <Button
+                        key={lang.value}
+                        variant={language === lang.value ? 'default' : 'secondary'}
+                        size="sm"
+                        onClick={() => {
+                          setLanguage(lang.value);
+                          translatePoem(); // Trigger translation when language is selected
+                        }}
+                        disabled={translating}
+                        className={cn(
+                          'rounded-md',
+                          language === lang.value ? 'bg-accent text-accent-foreground' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                        )}
+                      >
+                        {translating && language === lang.value ? (
+                          <>
+                            Translating...
+                            <Loader2 className="ml-2 h-4 w-4 animate-spin"/>
+                          </>
+                        ) : (
+                          lang.label
+                        )}
+                      </Button>
+                    ))}
 
                     <Button
                       variant="secondary"
