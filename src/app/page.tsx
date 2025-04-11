@@ -10,10 +10,11 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/c
 import {Textarea} from '@/components/ui/textarea';
 import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";
 import {cn} from "@/lib/utils";
-import {Loader2} from "lucide-react";
+import {Loader2, Sun, Moon} from "lucide-react";
 import {Input} from "@/components/ui/input";
 import {Avatar, AvatarImage, AvatarFallback} from "@/components/ui/avatar";
 import {toast} from "@/hooks/use-toast";
+import {useTheme} from "next-themes";
 
 const languages = [
   {value: 'en-IN', label: 'English (India)'},
@@ -41,6 +42,7 @@ export default function Home() {
   const [generateType, setGenerateType] = useState<'poem' | 'song'>('poem');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const {theme, setTheme} = useTheme();
 
   const scrollToBottom = () => {
     chatContainerRef.current?.scrollIntoView({behavior: 'smooth', block: 'end'});
@@ -138,6 +140,15 @@ export default function Home() {
 
   return (
     <div className="flex flex-col items-center justify-start min-h-screen p-4 bg-background text-foreground">
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+      >
+        {theme === 'light' ? <Moon className="h-[1.2rem] w-[1.2rem]"/> :
+          <Sun className="h-[1.2rem] w-[1.2rem]"/>}
+        <span className="sr-only">Toggle theme</span>
+      </Button>
       <Card className="w-full max-w-2xl space-y-4 rounded-lg shadow-md border border-border animate-fade-in">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-semibold tracking-tight animate-slide-in-from-top">
