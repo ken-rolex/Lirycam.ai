@@ -1,20 +1,20 @@
-// photo-to-poem.ts
 'use server';
 
 /**
- * @fileOverview Generates a poem from a photo.
+ * @fileOverview Generates a poem from photos.
  *
  * - photoToPoem - A function that generates a poem from a photo.
  * - PhotoToPoemInput - The input type for the photoToPoem function.
- * - PhotoToPoemOutput - The return type for the photoToPoem function.
+ * - PhotoToPoemOutput - The return type for the PhotoToPoem function.
  */
 
 import {ai} from '@/ai/ai-instance';
 import {z} from 'genkit';
 
 const PhotoToPoemInputSchema = z.object({
-  photoUrl: z.string().describe('The URL of the photo.'),
+  photoUrls: z.array(z.string().describe('The URLs of the photos.')).min(1).describe('Array of photo URLs. Must contain at least one URL.'),
 });
+
 export type PhotoToPoemInput = z.infer<typeof PhotoToPoemInputSchema>;
 
 const PhotoToPoemOutputSchema = z.object({
@@ -30,7 +30,7 @@ const prompt = ai.definePrompt({
   name: 'photoToPoemPrompt',
   input: {
     schema: z.object({
-      photoUrl: z.string().describe('The URL of the photo.'),
+      photoUrls: z.array(z.string().describe('The URLs of the photos.')).min(1).describe('Array of photo URLs. Must contain at least one URL.'),
     }),
   },
   output: {
@@ -39,10 +39,11 @@ const prompt = ai.definePrompt({
     }),
   },
   prompt: `You are a poet laureate, skilled at creating evocative poems inspired by images.
-
-  Consider the visual elements, mood, and story suggested by the following photo, and compose a short poem that captures its essence.
-
-  Photo: {{media url=photoUrl}}
+  Consider the visual elements, mood, and story suggested by the following photos, and compose a short poem that captures their essence.
+  Photos:
+  {{#each photoUrls}}
+    {{media url=this}}
+  {{/each}}
   `,
 });
 
