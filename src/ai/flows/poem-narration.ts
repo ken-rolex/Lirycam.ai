@@ -54,6 +54,9 @@ const textToSpeechTool = ai.defineTool({
 async input => {
   // Free implementation using responsivevoice.js
   if (typeof window !== 'undefined' && window.responsiveVoice) {
+    // Initialize ResponsiveVoice with a placeholder API key to prevent warnings.
+    window.responsiveVoice.apiKey = 'YOUR_API_KEY'; // Replace with a real API key if you have one
+
     const voice = mapVoiceGender(input.voiceGender, input.language);
     console.log(`Attempting to speak with voice: ${voice}`);
     window.responsiveVoice.speak(input.text, voice, {
