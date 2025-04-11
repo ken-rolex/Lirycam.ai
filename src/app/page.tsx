@@ -327,12 +327,6 @@ export default function Home() {
                       )}
                     </Button>
                   </div>
-
-                  {audioUrl && (
-                    <audio controls src={audioUrl} className="w-full rounded-md mt-4">
-                      Your browser does not support the audio element.
-                    </audio>
-                  )}
                 </div>
               </div>
             )}
