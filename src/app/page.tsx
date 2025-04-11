@@ -16,6 +16,7 @@ export default function Home() {
   const [poem, setPoem] = useState('');
   const [audioUrl, setAudioUrl] = useState('');
   const [voiceGender, setVoiceGender] = useState<'male' | 'female' | 'neutral'>('neutral');
+  const [language, setLanguage] = useState('en-IN');
   const [loadingPoem, setLoadingPoem] = useState(false);
   const [loadingAudio, setLoadingAudio] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -58,7 +59,7 @@ export default function Home() {
     setLoadingAudio(true);
     setErrorMessage('');
     try {
-      const result = await narratePoem({poem, voiceGender});
+      const result = await narratePoem({poem, voiceGender, language});
       setAudioUrl(result.audioUrl);
     } catch (error: any) {
       console.error('Error narrating poem:', error);
@@ -142,6 +143,18 @@ export default function Home() {
                     <SelectItem value="neutral">Neutral</SelectItem>
                   </SelectContent>
                 </Select>
+
+                <Select value={language} onValueChange={(value) => setLanguage(value)}>
+                  <SelectTrigger className="w-[180px] h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1">
+                    <SelectValue placeholder="Select Language" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-md shadow-md border border-border bg-popover text-popover-foreground">
+                    <SelectItem value="en-IN">English (India)</SelectItem>
+                    <SelectItem value="hi-IN">Hindi</SelectItem>
+                    {/* Add more Indian languages here */}
+                  </SelectContent>
+                </Select>
+
                 <Button
                   variant="secondary"
                   size="default"
@@ -171,3 +184,4 @@ export default function Home() {
     </div>
   );
 }
+

@@ -5,7 +5,7 @@
  *
  * - photoToSong - A function that generates a song from a photo.
  * - PhotoToSongInput - The input type for the photoToSong function.
- * - PhotoToSongOutput - The return type for the photoToSong function.
+ * - PhotoToSongOutput - The return type for the PhotoToSong function.
  */
 
 import {ai} from '@/ai/ai-instance';
@@ -39,7 +39,7 @@ const prompt = ai.definePrompt({
   },
   prompt: `You are a songwriter, skilled at creating songs inspired by images.
 
-  Consider the visual elements, mood, and story suggested by the following photo, and compose a short song (verse + chorus) that captures its essence.
+  Consider the visual elements, mood, and story suggested by the following photo, and compose a song that has at least two verses and a chorus. The song lyrics must have enough words to have an approximate read time of 2 minutes.  If appropriate for the photo, incorporate Indian cultural elements into the song lyrics, such as references to nature, festivals, or mythology.
 
   Photo: {{media url=photoUrl}}
   `,
@@ -59,3 +59,4 @@ const photoToSongFlow = ai.defineFlow<
     return output!;
   }
 );
+
