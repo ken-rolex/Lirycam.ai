@@ -32,7 +32,7 @@ const textToSpeechTool = ai.defineTool({
   inputSchema: z.object({
     text: z.string().describe('The text to convert to speech.'),
     voiceGender: z.enum(['male', 'female', 'neutral']).describe('The gender of the voice to use.'),
-    language: z.string().default('en-IN').describe('The language to use for narration (e.g., en-IN, hi-IN). Defaults to English (India).'),
+    language: z.string().default('en-IN').describe('The language to use for narration (e.g., en-IN, hi-IN, es-ES). Defaults to English (India).'),
   }),
   outputSchema: z.string().describe('The URL of the generated audio file.'),
 },
@@ -90,4 +90,5 @@ const narratePoemFlow = ai.defineFlow<
     return output;
   }
 );
+
 

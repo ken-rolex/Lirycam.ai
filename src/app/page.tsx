@@ -9,11 +9,21 @@ import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/compo
 import {Textarea} from '@/components/ui/textarea';
 import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";
 import {cn} from "@/lib/utils";
-import {Loader2, Sun, Moon} from "lucide-react";
+import {Loader2, Sun, Moon, Settings} from "lucide-react";
 import {Input} from "@/components/ui/input";
 import {Avatar, AvatarImage, AvatarFallback} from "@/components/ui/avatar";
 import {toast} from "@/hooks/use-toast";
 import {useTheme} from "next-themes";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {Label} from "@/components/ui/label";
+import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
 
 const languages = [
   {value: 'en-IN', label: 'English (India)'},
@@ -27,6 +37,7 @@ const languages = [
   {value: 'kn-IN', label: 'Kannada (India)'},
   {value: 'ml-IN', label: 'Malayalam (India)'},
   {value: 'pa-IN', label: 'Punjabi (India)'},
+  {value: 'es-ES', label: 'Spanish (Spain)'},
 ];
 
 const voiceGenders = [
@@ -50,6 +61,7 @@ export default function Home() {
   const {theme, setTheme} = useTheme();
   const [mounted, setMounted] = useState(false);
   const [translating, setTranslating] = useState(false);
+  const [openCustomizeDialog, setOpenCustomizeDialog] = useState(false);
 
 
   useEffect(() => {
@@ -163,6 +175,37 @@ export default function Home() {
       toast({
         title: 'Translation Complete',
         description: `Poem translated to ${language}.`,
+      });
+    } catch (error: any) {
+      console.error('Error translating poem:', error);
+      setErrorMessage('Failed to translate poem. Please try again.');
+      toast({
+        variant: 'destructive',
+        title: 'Translation Error',
+        description: 'Failed to translate poem. Please try again.',
+      });
+    } finally {
+      setTranslating(false);
+    }
+  };
+
+  const handleCustomize = () => {
+    setOpenCustomizeDialog(true);
+  };
+
+  const handleLanguageChange = async (newLanguage: string) => {
+    setLanguage(newLanguage);
+    setTranslating(true);
+    setErrorMessage('');
+    try {
+      // Placeholder for AI translation logic
+      // Replace this with your actual AI translation implementation
+      console.log(`Translating poem to ${newLanguage}`);
+      // For demonstration, just use a simple message
+      setPoem(`(Translated to ${newLanguage}) ${poem}`);
+      toast({
+        title: 'Translation Complete',
+        description: `Poem translated to ${newLanguage}.`,
       });
     } catch (error: any) {
       console.error('Error translating poem:', error);
@@ -317,46 +360,53 @@ export default function Home() {
                 <div className="rounded-xl border border-border bg-primary text-primary-foreground p-4 w-fit max-w-[80%] font-serif">
                   <p className="text-lg whitespace-pre-line">{poem}</p>
                   <div className="mt-4 flex items-center space-x-2">
-                    {voiceGenders.map(gender => (
-                      <Button
-                        key={gender.value}
-                        variant={voiceGender === gender.value ? 'default' : 'secondary'}
-                        size="sm"
-                        onClick={() => setVoiceGender(gender.value as 'male' | 'female' | 'neutral')}
-                        className={cn(
-                          'rounded-md',
-                          voiceGender === gender.value ? 'bg-accent text-accent-foreground' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-                        )}
-                      >
-                        {gender.label}
-                      </Button>
-                    ))}
-
-                    {languages.map(lang => (
-                      <Button
-                        key={lang.value}
-                        variant={language === lang.value ? 'default' : 'secondary'}
-                        size="sm"
-                        onClick={() => {
-                          setLanguage(lang.value);
-                          translatePoem(); // Trigger translation when language is selected
-                        }}
-                        disabled={translating}
-                        className={cn(
-                          'rounded-md',
-                          language === lang.value ? 'bg-accent text-accent-foreground' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-                        )}
-                      >
-                        {translating && language === lang.value ? (
-                          <>
-                            Translating...
-                            <Loader2 className="ml-2 h-4 w-4 animate-spin"/>
-                          </>
-                        ) : (
-                          lang.label
-                        )}
-                      </Button>
-                    ))}
+                    <Dialog open={openCustomizeDialog} onOpenChange={setOpenCustomizeDialog}>
+                      <DialogTrigger asChild>
+                        <Button variant="secondary" size="sm">
+                          Customize <Settings className="ml-2 h-4 w-4"/>
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                          <DialogTitle>Customize Narration</DialogTitle>
+                          <DialogDescription>
+                            Choose the voice gender and language for the narration.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="grid gap-4 py-4">
+                          <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="voice-gender" className="text-right">
+                              Voice Gender
+                            </Label>
+                            <RadioGroup defaultValue={voiceGender} onValueChange={(value) => setVoiceGender(value as 'male' | 'female' | 'neutral')} className="col-span-3">
+                              <div className="flex items-center space-x-2">
+                                {voiceGenders.map(gender => (
+                                  <div key={gender.value} className="flex items-center space-x-2">
+                                    <RadioGroupItem value={gender.value} id={`gender-${gender.value}`} className="rounded-full"/>
+                                    <Label htmlFor={`gender-${gender.value}`}>{gender.label}</Label>
+                                  </div>
+                                ))}
+                              </div>
+                            </RadioGroup>
+                          </div>
+                          <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="language" className="text-right">
+                              Language
+                            </Label>
+                            <RadioGroup defaultValue={language} onValueChange={(value) => handleLanguageChange(value)} className="col-span-3">
+                              <div className="flex items-center space-x-2">
+                                {languages.map(lang => (
+                                  <div key={lang.value} className="flex items-center space-x-2">
+                                    <RadioGroupItem value={lang.value} id={`language-${lang.value}`} className="rounded-full"/>
+                                    <Label htmlFor={`language-${lang.value}`}>{lang.label}</Label>
+                                  </div>
+                                ))}
+                              </div>
+                            </RadioGroup>
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
 
                     <Button
                       variant="secondary"
