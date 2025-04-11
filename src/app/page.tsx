@@ -43,6 +43,12 @@ export default function Home() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const {theme, setTheme} = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
 
   const scrollToBottom = () => {
     chatContainerRef.current?.scrollIntoView({behavior: 'smooth', block: 'end'});
@@ -145,8 +151,8 @@ export default function Home() {
         size="icon"
         onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
       >
-        {theme === 'light' ? <Moon className="h-[1.2rem] w-[1.2rem]"/> :
-          <Sun className="h-[1.2rem] w-[1.2rem]"/>}
+        {mounted && (theme === 'light' ? <Moon className="h-[1.2rem] w-[1.2rem]"/> :
+          <Sun className="h-[1.2rem] w-[1.2rem]"/>)}
         <span className="sr-only">Toggle theme</span>
       </Button>
       <Card className="w-full max-w-2xl space-y-4 rounded-lg shadow-md border border-border animate-fade-in">
