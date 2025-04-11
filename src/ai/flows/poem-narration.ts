@@ -81,7 +81,7 @@ const narratePoemFlow = ai.defineFlow<
   async input => {
     const { output } = await prompt(input);
     if (!output) {
-      throw new Error('Failed to generate audio URL.');
+      throw new Error(`Failed to generate audio URL. The prompt returned null for input: ${JSON.stringify(input)}`);
     }
     return output;
   }
