@@ -25,6 +25,7 @@ import {
 import {Label} from "@/components/ui/label";
 import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
 
+// Define languages and voice genders
 const languages = [
   {value: 'en-IN', label: 'English (India)'},
   {value: 'hi-IN', label: 'Hindi (India)'},
@@ -46,6 +47,13 @@ const voiceGenders = [
   {value: 'neutral', label: 'Neutral'},
 ];
 
+// Declare responsiveVoice as a global type
+declare global {
+  interface Window {
+    responsiveVoice: any;
+  }
+}
+
 export default function Home() {
   const [photoUrls, setPhotoUrls] = useState<string[]>([]);
   const [poem, setPoem] = useState('');
@@ -63,11 +71,33 @@ export default function Home() {
   const [translating, setTranslating] = useState(false);
   const [openCustomizeDialog, setOpenCustomizeDialog] = useState(false);
 
-
+  // Initialize responsiveVoice.
   useEffect(() => {
+    const addResponsiveVoice = async () => {
+      if (typeof window !== 'undefined') {
+        const script = document.createElement('script');
+        script.src = 'https://code.responsivevoice.org/responsivevoice.js';
+        script.async = true;
+        document.body.appendChild(script);
+
+        script.onload = () => {
+          console.log('responsiveVoice loaded');
+        };
+
+        script.onerror = () => {
+          console.error('Failed to load responsiveVoice.js');
+          toast({
+            variant: 'destructive',
+            title: 'TTS Error',
+            description: 'Failed to load text-to-speech library.',
+          });
+        };
+      }
+    };
+
+    addResponsiveVoice();
     setMounted(true);
   }, []);
-
 
   const scrollToBottom = () => {
     chatContainerRef.current?.scrollIntoView({behavior: 'smooth', block: 'end'});
@@ -148,7 +178,9 @@ export default function Home() {
     setAudioUrl('');
     try {
       const result = await narratePoem({poem, voiceGender, language});
-      setAudioUrl(result.audioUrl);
+      // Since responsivevoice.js plays the audio directly, we don't have a URL.
+      // We can set a message to indicate that the narration has been triggered.
+      setAudioUrl('Narration triggered.');
     } catch (error: any) {
       console.error('Error narrating poem:', error);
       setErrorMessage('Failed to narrate poem. Please try again.');
@@ -412,7 +444,7 @@ export default function Home() {
                       variant="secondary"
                       size="default"
                       onClick={narrateThePoem}
-                      disabled={!poem || loadingAudio}
+                      disabled={!poem || loadingAudio || !mounted || typeof window === 'undefined' || !window.responsiveVoice}
                       className="rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/80 animate-gradient"
                     >
                       {loadingAudio ? (

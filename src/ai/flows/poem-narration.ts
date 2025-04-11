@@ -18,12 +18,27 @@ const NarratePoemInputSchema = z.object({
 export type NarratePoemInput = z.infer<typeof NarratePoemInputSchema>;
 
 const NarratePoemOutputSchema = z.object({
-  audioUrl: z.string().describe('The URL of the narrated poem audio.'),
+  audioUrl: z.string().describe('The URL of the narrated poem audio. For this free implementation, the audio is played directly and no URL is available.'),
 });
 export type NarratePoemOutput = z.infer<typeof NarratePoemOutputSchema>;
 
 export async function narratePoem(input: NarratePoemInput): Promise<NarratePoemOutput> {
   return narratePoemFlow(input);
+}
+
+// Utility function to map voice gender to ResponsiveVoice's limited options.
+function mapVoiceGender(gender: 'male' | 'female' | 'neutral', language: string): string {
+  const langCode = language.split('-')[0];
+  switch (gender) {
+    case 'male':
+      return `${langCode}male`; // e.g., enmale, himale
+    case 'female':
+      return `${langCode}female`; // e.g., enfemale, hifemale
+    case 'neutral':
+    default:
+      // For neutral, try to use a standard voice if available, otherwise default to female.
+      return `${langCode}female`;
+  }
 }
 
 const textToSpeechTool = ai.defineTool({
@@ -34,14 +49,32 @@ const textToSpeechTool = ai.defineTool({
     voiceGender: z.enum(['male', 'female', 'neutral']).describe('The gender of the voice to use.'),
     language: z.string().default('en-IN').describe('The language to use for narration (e.g., en-IN, hi-IN, es-ES). Defaults to English (India).'),
   }),
-  outputSchema: z.string().describe('The URL of the generated audio file.'),
+  outputSchema: z.string().describe('The URL of the generated audio file.  For this free implementation, the audio is played directly and no URL is available.'),
 },
 async input => {
-  // Placeholder implementation for text-to-speech conversion.
-  // In a real application, this would call an external TTS service or API.
-  // For now, it simply returns a dummy audio URL.
-  console.log(`Converting text to speech with voice gender: ${input.voiceGender} and language: ${input.language}`);
-  return `https://example.com/audio/${input.text.substring(0, 10)}_${input.voiceGender}_${input.language}.mp3`;
+  // Free implementation using responsivevoice.js
+  if (typeof window !== 'undefined' && window.responsiveVoice) {
+    const voice = mapVoiceGender(input.voiceGender, input.language);
+    console.log(`Attempting to speak with voice: ${voice}`);
+    window.responsiveVoice.speak(input.text, voice, {
+      pitch: 1,
+      rate: 1,
+      volume: 1,
+      onstart: () => {
+        console.log('Speech started');
+      },
+      onend: () => {
+        console.log('Speech ended');
+      },
+      onerror: (e) => {
+        console.error('Speech error:', e);
+      }
+    });
+    return 'Audio played directly using responsivevoice.js'; // No audio URL is available
+  } else {
+    console.warn('responsiveVoice not available.  Make sure it is included in the page.');
+    throw new Error('responsiveVoice not available.');
+  }
 }
 );
 
@@ -56,7 +89,7 @@ const prompt = ai.definePrompt({
   },
   output: {
     schema: z.object({
-      audioUrl: z.string().describe('The URL of the narrated poem audio.'),
+      audioUrl: z.string().describe('The URL of the narrated poem audio. For this free implementation, the audio is played directly and no URL is available.'),
     }),
   },
   tools: [textToSpeechTool],
@@ -69,7 +102,7 @@ const prompt = ai.definePrompt({
   The user has selected the following language for the narration: {{language}}
 
   Use the textToSpeech tool to convert the poem to speech using the specified voice gender and language.
-  Return the URL of the narrated poem audio.
+  Return the URL of the narrated poem audio.  Since the audio is played directly, there is no URL so just return the message "Audio played directly using responsivevoice.js".
 `,
 });
 
@@ -90,5 +123,3 @@ const narratePoemFlow = ai.defineFlow<
     return output;
   }
 );
-
-
