@@ -15,15 +15,6 @@
       "destination": "/api"
     }
   ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/src/app/$1",
-      "headers": {
-        "cache-control": "s-maxage=1, stale-while-revalidate"
-      }
-    }
-  ],
   "cleanUrls": true,
   "trailingSlash": false,
   "headers": [
