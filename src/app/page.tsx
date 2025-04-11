@@ -2,6 +2,7 @@
 
 import {useState} from 'react';
 import {photoToPoem} from '@/ai/flows/photo-to-poem';
+import {photoToSong} from '@/ai/flows/photo-to-song';
 import {narratePoem} from '@/ai/flows/poem-narration';
 import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
@@ -18,6 +19,7 @@ export default function Home() {
   const [loadingPoem, setLoadingPoem] = useState(false);
   const [loadingAudio, setLoadingAudio] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [generateType, setGenerateType] = useState<'poem' | 'song'>('poem');
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -35,16 +37,22 @@ export default function Home() {
     setLoadingPoem(true);
     setErrorMessage('');
     try {
-      const result = await photoToPoem({photoUrl});
-      setPoem(result.poem);
+      let result;
+      if (generateType === 'poem') {
+        result = await photoToPoem({photoUrl});
+      } else {
+        result = await photoToSong({photoUrl});
+      }
+      setPoem(result.poem || result.song); // Use poem or song based on generateType
     } catch (error: any) {
-      console.error('Error generating poem:', error);
-      setErrorMessage('Failed to generate poem. Please try again.');
+      console.error('Error generating content:', error);
+      setErrorMessage(`Failed to generate ${generateType}. Please try again.`);
       setPoem('');
     } finally {
       setLoadingPoem(false);
     }
   };
+
 
   const narrateThePoem = async () => {
     setLoadingAudio(true);
@@ -67,7 +75,7 @@ export default function Home() {
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-semibold tracking-tight">PhotoVerse</CardTitle>
           <CardDescription className="text-sm text-muted-foreground">
-            Upload a photo and generate a poem inspired by the image.
+            Upload a photo and generate a poem or song inspired by the image.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -87,22 +95,40 @@ export default function Home() {
             )}
           </div>
 
-          <Button
-            variant="primary"
-            size="default"
-            onClick={generatePoem}
-            disabled={!photoUrl || loadingPoem}
-            className="w-full"
-          >
-            {loadingPoem ? 'Generating Poem...' : 'Generate Poem'}
-          </Button>
+          <div className="flex space-x-2">
+            <Button
+              variant="primary"
+              size="default"
+              onClick={() => {
+                setGenerateType('poem');
+                generatePoem();
+              }}
+              disabled={!photoUrl || loadingPoem}
+              className="w-1/2"
+            >
+              {loadingPoem && generateType === 'poem' ? 'Generating Poem...' : 'Generate Poem'}
+            </Button>
+            <Button
+              variant="secondary"
+              size="default"
+              onClick={() => {
+                setGenerateType('song');
+                generatePoem();
+              }}
+              disabled={!photoUrl || loadingPoem}
+              className="w-1/2"
+            >
+              {loadingPoem && generateType === 'song' ? 'Generating Song...' : 'Generate Song'}
+            </Button>
+          </div>
+
 
           {poem && (
             <div className="flex flex-col space-y-4">
               <Textarea
                 readOnly
                 value={poem}
-                placeholder="Generated poem will appear here."
+                placeholder="Generated poem/song will appear here."
                 className="min-h-[100px] rounded-md shadow-sm border border-input"
               />
               <div className="flex items-center space-x-2">
