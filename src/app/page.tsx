@@ -221,14 +221,14 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-start min-h-screen p-4 bg-background text-foreground">
+    <div className="flex flex-col items-center justify-start min-h-screen p-4 bg-background text-foreground animate-pulse">
       <Button
         variant="ghost"
         size="icon"
         onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
       >
-        {mounted && (theme === 'light' ? <Moon className="h-[1.2rem] w-[1.2rem]"/> :
-          <Sun className="h-[1.2rem] w-[1.2rem]"/>)}
+        {mounted && (theme === 'light' ? <Moon className="h-[1.2rem] w-[1.2rem] animate-spin"/> :
+          <Sun className="h-[1.2rem] w-[1.2rem] animate-spin"/>)}
         <span className="sr-only">Toggle theme</span>
       </Button>
       <Card className="w-full max-w-2xl space-y-4 rounded-lg shadow-md border border-border animate-fade-in">
@@ -246,7 +246,7 @@ export default function Home() {
             <Button
               variant="secondary"
               onClick={triggerImageUpload}
-              className="rounded-md shadow-sm border border-input"
+              className="rounded-md shadow-sm border border-input animate-bounce"
             >
               Upload Photos
             </Button>
@@ -261,7 +261,7 @@ export default function Home() {
 
             <div className="flex flex-wrap gap-2">
               {photoUrls.map((url, index) => (
-                <div key={index} className="relative">
+                <div key={index} className="relative animate-zoom-in">
                   <img
                     src={url}
                     alt={`Uploaded photo ${index + 1}`}
@@ -275,7 +275,7 @@ export default function Home() {
               <Button
                 variant="outline"
                 onClick={clearImages}
-                className="rounded-md shadow-sm border border-input"
+                className="rounded-md shadow-sm border border-input animate-pulse"
               >
                 Clear Images
               </Button>
@@ -291,7 +291,7 @@ export default function Home() {
                 generateContent();
               }}
               disabled={photoUrls.length === 0 || loadingPoem}
-              className="w-1/2"
+              className="w-1/2 animate-swing"
             >
               {loadingPoem && generateType === 'poem' ? (
                 <>
@@ -310,7 +310,7 @@ export default function Home() {
                 generateContent();
               }}
               disabled={photoUrls.length === 0 || loadingPoem}
-              className="w-1/2"
+              className="w-1/2 animate-swing"
             >
               {loadingPoem && generateType === 'song' ? (
                 <>
@@ -325,7 +325,7 @@ export default function Home() {
 
           <div ref={chatContainerRef} className="flex flex-col space-y-4">
             {photoUrls.length > 0 && (
-              <div className="flex items-start space-x-2">
+              <div className="flex items-start space-x-2 animate-appear">
                 <Avatar>
                   <AvatarImage src={photoUrls[0]} alt="Uploaded Image"/>
                   <AvatarFallback>IMG</AvatarFallback>
@@ -352,18 +352,18 @@ export default function Home() {
             )}
 
             {poem && (
-              <div className="flex items-start space-x-2">
+              <div className="flex items-start space-x-2 animate-fade-in">
                 <Avatar>
                   <AvatarImage src="/bot.png" alt="Bot Avatar"/>
                   <AvatarFallback>AI</AvatarFallback>
                 </Avatar>
-                <div className="rounded-xl border border-border bg-primary text-primary-foreground p-4 w-fit max-w-[80%] font-serif">
+                <div className="rounded-xl border border-border bg-primary text-primary-foreground p-4 w-fit max-w-[80%] font-serif animate-text-slide">
                   <p className="text-lg whitespace-pre-line">{poem}</p>
                   <div className="mt-4 flex items-center space-x-2">
                     <Dialog open={openCustomizeDialog} onOpenChange={setOpenCustomizeDialog}>
                       <DialogTrigger asChild>
                         <Button variant="secondary" size="sm">
-                          Customize <Settings className="ml-2 h-4 w-4"/>
+                          Customize <Settings className="ml-2 h-4 w-4 animate-spin"/>
                         </Button>
                       </DialogTrigger>
                       <DialogContent className="sm:max-w-[425px]">
@@ -413,7 +413,7 @@ export default function Home() {
                       size="default"
                       onClick={narrateThePoem}
                       disabled={!poem || loadingAudio}
-                      className="rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                      className="rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/80 animate-gradient"
                     >
                       {loadingAudio ? (
                         <>
