@@ -9,24 +9,24 @@ body {
 
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 220 20% 30%;
+    --background: 30 10% 97%; /* Light earthy tone */
+    --foreground: 30 10% 30%; /* Darker earthy tone for text */
     --card: 0 0% 100%;
     --card-foreground: 0 0% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
-    --primary: 100 50% 40%;
-    --primary-foreground: 50 10% 98%;
-    --secondary: 50 20% 80%;
-    --secondary-foreground: 50 20% 20%;
-    --muted: 50 20% 90%;
-    --muted-foreground: 50 20% 50%;
-    --accent: 180 100% 30%;
-    --accent-foreground: 50 10% 98%;
+    --primary: 30 50% 40%; /* Earthy primary color */
+    --primary-foreground: 0 0% 100%; /* White text on primary */
+    --secondary: 30 20% 90%; /* Soft pastel secondary */
+    --secondary-foreground: 30 10% 30%; /* Earthy text on secondary */
+    --muted: 30 20% 90%; /* Light muted background */
+    --muted-foreground: 30 20% 60%; /* Muted text */
+    --accent: 180 100% 30%; /* Teal accent color */
+    --accent-foreground: 0 0% 100%; /* White text on accent */
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 50 20% 80%;
-    --input: 50 20% 80%;
+    --border: 30 20% 80%; /* Earthy border color */
+    --input: 30 20% 80%; /* Earthy input color */
     --ring: 100 50% 40%;
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
@@ -87,4 +87,3 @@ body {
     @apply bg-background text-foreground;
   }
 }
-
